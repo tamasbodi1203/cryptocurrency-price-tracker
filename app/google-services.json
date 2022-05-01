@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "920242195711",
+    "project_id": "cryptocurrenty-price-tracker",
+    "storage_bucket": "cryptocurrenty-price-tracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920242195711:android:c53097ef70f10031e790ca",
+        "android_client_info": {
+          "package_name": "com.example.cryptocurrencypricetracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920242195711-7ouf8dp3r2u4mkkje21e9p6oscl2mgiu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cryptocurrencypricetracker",
+            "certificate_hash": "8812cc406fce5e28500fda750732a3e8e5b3b767"
+          }
+        },
+        {
+          "client_id": "920242195711-fatkj00vb3nvjks8tao02q03u5tk8cg0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC6eS9JZU6a0LqLIGmbumcgdR4mE2XKzk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920242195711-fatkj00vb3nvjks8tao02q03u5tk8cg0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">Cryptocurrency Price Tracker</string>
+    <string name="username">Felhasználónév</string>
+    <string name="password">Jelszó</string>
+    <string name="login">Bejelentkezés</string>
+    <string name="registration">Regisztráció</string>
+    <string name="email_address">E-mail cím</string>
+    <string name="password_confirm">Jelszó megerősítése</string>
+    <string name="cancel">Mégse</string>
+    <string name="search">Keresés</string>
+    <string name="watchlist">Kedvencek</string>
+    <string name="settings">Beállítások</string>
+    <string name="logout">Kijelentkezés</string>
+
+    <!--    RecyclerView resources-->
+    <string name="item_price">Ár</string>
+    <string name="item_symbol">Szimbólum</string>
+    <string name="loginAsGuest">Bejelentkezés vendégként</string>
+
+    <!--    <string-array name="cryptocurrencies">-->
+<!--        <item>BTC</item>-->
+<!--        <item>ETH</item>-->
+<!--        <item>BNB</item>-->
+<!--        <item>SOL</item>-->
+<!--        <item>XRP</item>-->
+<!--    </string-array>-->
+
+    <string-array name="cryptocurrency_item_symbols">
+        <item>BTC</item>
+        <item>ETH</item>
+        <item>BNB</item>
+        <item>SOL</item>
+        <item>XRP</item>
+    </string-array>
+
+    <array name="cryptocurrency_item_images">
+        <item>@drawable/btc</item>
+        <item>@drawable/eth</item>
+        <item>@drawable/bnb</item>
+        <item>@drawable/sol</item>
+        <item>@drawable/xrp</item>
+    </array>
+
+    <string-array name="cryptocurrency_item_prices">
+        <item>45000</item>
+        <item>2800</item>
+        <item>400</item>
+        <item>90</item>
+        <item>0.6</item>
+    </string-array>
+
+</resources>

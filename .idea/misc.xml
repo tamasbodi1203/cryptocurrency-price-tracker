@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_coin_list.xml" value="0.23867753623188406" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_cryptocurrency_list.xml" value="0.20625" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_registration.xml" value="0.17255434782608695" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_watch_list.xml" value="0.18795289855072464" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_watchlist.xml" value="0.5" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/list_item.xml" value="0.33" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/menu/watchlist_menu.xml" value="0.33" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
