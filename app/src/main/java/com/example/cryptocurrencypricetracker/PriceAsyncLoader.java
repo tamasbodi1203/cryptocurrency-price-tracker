@@ -94,7 +94,7 @@ public class PriceAsyncLoader extends AsyncTaskLoader<ArrayList<CoinItem>> {
                 JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
 
-                item.setPrice(new BigDecimal(priceString));
+                item.setPrice(Double.parseDouble(priceString));
             }
 
         } catch (JSONException e) {

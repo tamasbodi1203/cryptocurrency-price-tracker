@@ -1,14 +1,14 @@
 package com.example.cryptocurrencypricetracker;
 
-import java.math.BigDecimal;
-
 public class CoinItem {
     private String coinGeckoId;
     private String symbol;
-    private BigDecimal price;
-    private final int imageResource;
+    private double price;
+    private int imageResource;
 
-    public CoinItem(String coinGeckoId, String symbol, BigDecimal price, int imageResource) {
+    public CoinItem() {}
+
+    public CoinItem(String coinGeckoId, String symbol, double price, int imageResource) {
         this.coinGeckoId = coinGeckoId;
         this.symbol = symbol;
         this.price = price;
@@ -17,10 +17,10 @@ public class CoinItem {
 
     public String getCoinGeckoId() {return coinGeckoId;}
     public String getSymbol() {return symbol;}
-    public BigDecimal getPrice() {return price;}
+    public double getPrice() {return price;}
     public int getImageResource() {return imageResource;}
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 }

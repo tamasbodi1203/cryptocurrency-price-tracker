@@ -19,6 +19,9 @@ import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,15 +51,18 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
     private int gridNumber = 1;
     private boolean viewRow = true;
 
+    private FirebaseFirestore mFireStore;
+    private CollectionReference mItems;
+
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
             Log.d("Handlers", "Called on main thread");
-            // Repeat this the same runnable code block again another 10 seconds
+            // Repeat this the same runnable code block again another 30 seconds
             refreshPrices();
             mAdapter.notifyDataSetChanged();
             // 'this' is referencing the Runnable object
-            handler.postDelayed(this, 10000);
+            handler.postDelayed(this, 30000);
         }
     };
 
@@ -80,10 +86,29 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         mAdapter = new CoinItemAdapter(this, mItemsData);
         mRecyclerView.setAdapter(mAdapter);
 
-        initializeData();
+        mFireStore = FirebaseFirestore.getInstance();
+        mItems = mFireStore.collection("Items");
+        queryData();
 
         // Periódikusan frissítjük az árfolyamot
         handler.post(runnableCode);
+    }
+
+    private void queryData() {
+        mItemsData.clear();
+
+        mItems.orderBy("symbol").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                CoinItem item = documentSnapshot.toObject(CoinItem.class);
+                mItemsData.add(item);
+            }
+
+            if (mItemsData.size() == 0) {
+                initializeData();
+                queryData();
+            }
+            mAdapter.notifyDataSetChanged();
+        });
     }
 
     private void initializeData() {
@@ -92,15 +117,16 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         String[] itemsPrice = getResources().getStringArray(R.array.cryptocurrency_item_prices);
         TypedArray itemsImageResource = getResources().obtainTypedArray(R.array.cryptocurrency_item_images);
 
-        mItemsData.clear();
+//        mItemsData.clear();
 
         for (int i = 0; i < itemSymbol.length; i++) {
-            mItemsData.add(new CoinItem(itemCoinGeckoId[i], itemSymbol[i], new BigDecimal(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
+//            mItemsData.add(new CoinItem(itemCoinGeckoId[i], itemSymbol[i], new BigDecimal(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
+            mItems.add(new CoinItem(itemCoinGeckoId[i], itemSymbol[i], Double.parseDouble(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
         }
 
         itemsImageResource.recycle();
 
-        mAdapter.notifyDataSetChanged();
+//        mAdapter.notifyDataSetChanged();
 
     }
 
@@ -214,8 +240,9 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
                 JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
                 Log.d(LOG_TAG, item.getSymbol() + " jelenlegi ár: " + priceString);
+                //mItems.document(item.getCoinGeckoId()).update("price", Double.parseDouble(priceString));
 
-                item.setPrice(new BigDecimal(priceString));
+                item.setPrice(Double.parseDouble(priceString));
             }
 
         } catch (JSONException e) {
