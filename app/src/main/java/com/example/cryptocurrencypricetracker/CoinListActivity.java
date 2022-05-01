@@ -15,8 +15,13 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -47,6 +52,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
     private RecyclerView mRecyclerView;
     private ArrayList<CoinItem> mItemsData;
     private CoinItemAdapter mAdapter;
+    private FirebaseAuth mAuth;
     private FirebaseUser user;
     private int gridNumber = 1;
     private boolean viewRow = true;
@@ -58,11 +64,11 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         @Override
         public void run() {
             Log.d("Handlers", "Called on main thread");
-            // Repeat this the same runnable code block again another 30 seconds
+            // Repeat this the same runnable code block again another 10 seconds
             refreshPrices();
             mAdapter.notifyDataSetChanged();
             // 'this' is referencing the Runnable object
-            handler.postDelayed(this, 30000);
+            handler.postDelayed(this, 10000);
         }
     };
 
@@ -71,7 +77,8 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coin_list);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         if (user != null) {
             Log.d(LOG_TAG, "Autentikált felhasználó!");
         } else {
@@ -158,6 +165,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         switch (item.getItemId()) {
             case R.id.logout:
                 Log.d(LOG_TAG, "Kijelentkezés megnyomva!");
+                logout();
                 return true;
             case R.id.settings:
                 Log.d(LOG_TAG, "Beállítások megnyomva!");
@@ -249,5 +257,10 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
             e.printStackTrace();
         }
 
+    }
+
+    private void logout() {
+        mAuth.signOut();
+        finish();
     }
 }
