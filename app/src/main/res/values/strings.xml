@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cryptocurrency Price Tracker</string>
+    <string name="app_name">Pocket Sentinel</string>
     <string name="username">Felhasználónév</string>
     <string name="password">Jelszó</string>
     <string name="login">Bejelentkezés</string>

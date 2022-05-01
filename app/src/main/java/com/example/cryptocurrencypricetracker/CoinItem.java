@@ -1,6 +1,8 @@
 package com.example.cryptocurrencypricetracker;
 
 public class CoinItem {
+
+    private String id;
     private String coinGeckoId;
     private String symbol;
     private double price;
@@ -15,11 +17,15 @@ public class CoinItem {
         this.imageResource = imageResource;
     }
 
+    public String _getId() {return id;}
     public String getCoinGeckoId() {return coinGeckoId;}
     public String getSymbol() {return symbol;}
     public double getPrice() {return price;}
     public int getImageResource() {return imageResource;}
 
+    public void setId(String id) {
+        this.id = id;
+    }
     public void setPrice(double price) {
         this.price = price;
     }

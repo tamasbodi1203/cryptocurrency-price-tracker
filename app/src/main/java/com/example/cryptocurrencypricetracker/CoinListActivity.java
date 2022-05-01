@@ -107,6 +107,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         mItems.orderBy("symbol").get().addOnSuccessListener(queryDocumentSnapshots -> {
             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                 CoinItem item = documentSnapshot.toObject(CoinItem.class);
+                item.setId(documentSnapshot.getId());
                 mItemsData.add(item);
             }
 
@@ -248,7 +249,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
                 JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
                 Log.d(LOG_TAG, item.getSymbol() + " jelenlegi ár: " + priceString);
-                //mItems.document(item.getCoinGeckoId()).update("price", Double.parseDouble(priceString));
+                mItems.document(item._getId()).update("price", Double.parseDouble(priceString));
 
                 item.setPrice(Double.parseDouble(priceString));
             }
@@ -261,6 +262,6 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
 
     private void logout() {
         mAuth.signOut();
-        finish();
+        finishAffinity();
     }
 }
