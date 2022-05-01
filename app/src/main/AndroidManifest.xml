@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptocurrencyPriceTracker">
         <activity
-            android:name=".coinListActivity"
+            android:name=".CoinListActivity"
             android:exported="false" />
         <activity
             android:name=".RegistrationActivity"

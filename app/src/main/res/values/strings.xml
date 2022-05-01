@@ -17,13 +17,13 @@
     <string name="item_symbol">Szimbólum</string>
     <string name="loginAsGuest">Bejelentkezés vendégként</string>
 
-    <!--    <string-array name="cryptocurrencies">-->
-<!--        <item>BTC</item>-->
-<!--        <item>ETH</item>-->
-<!--        <item>BNB</item>-->
-<!--        <item>SOL</item>-->
-<!--        <item>XRP</item>-->
-<!--    </string-array>-->
+    <string-array name="cryptocurrency_item_coin_gecko_ids">
+        <item>bitcoin</item>
+        <item>ethereum</item>
+        <item>binancecoin</item>
+        <item>solana</item>
+        <item>ripple</item>
+    </string-array>
 
     <string-array name="cryptocurrency_item_symbols">
         <item>BTC</item>

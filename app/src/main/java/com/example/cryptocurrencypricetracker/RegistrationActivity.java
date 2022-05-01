@@ -88,7 +88,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void startWatchlist() {
-        Intent intent = new Intent(this, coinListActivity.class);
+        Intent intent = new Intent(this, CoinListActivity.class);
         intent.putExtra("SECRET_KEY", SECRET_KEY);
         startActivity(intent);
     }
