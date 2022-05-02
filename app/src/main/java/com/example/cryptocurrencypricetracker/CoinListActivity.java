@@ -43,7 +43,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CoinListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<CoinItem>> {
+public class CoinListActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<ArrayList<CoinItem>> {
 
     private static final String LOG_TAG = CoinListActivity.class.getName();
 
@@ -86,9 +86,9 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
             finish();
         }
 
+        showProgressDialog(this);
         mRecyclerView = findViewById(R.id.recycleView);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, gridNumber));
-        mRecyclerView.setVisibility(View.GONE);
         mItemsData = new ArrayList<>();
 
         mAdapter = new CoinItemAdapter(this, mItemsData);
@@ -117,8 +117,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
                 queryData();
             }
             mAdapter.notifyDataSetChanged();
-            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
+            hideProgressDialog();
         });
     }
 
