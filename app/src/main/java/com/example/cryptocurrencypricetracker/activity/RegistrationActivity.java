@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker;
+package com.example.cryptocurrencypricetracker.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,10 +11,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.cryptocurrencypricetracker.NotificationHelper;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.entity.UserAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -23,13 +28,16 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final String PREF_KEY = MainActivity.class.getPackage().toString();
 
     private SharedPreferences preferences;
+    private FirebaseFirestore mFireStore;
+    private CollectionReference mAccounts;
     private FirebaseAuth mAuth;
     private NotificationHelper mNotificationHelper;
 
     EditText usernameEditText;
-    EditText emailAddressEditText;
+    EditText emailEditText;
     EditText passwordEditText;
     EditText passwordConfirmEditText;
+    EditText phoneNumberEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,54 +50,55 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
         usernameEditText = findViewById(R.id.usernameEditText);
-        emailAddressEditText = findViewById(R.id.emailAddressEditText);
+        emailEditText = findViewById(R.id.emailAddressEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         passwordConfirmEditText = findViewById(R.id.passwordConfirmEditText);
+        phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
 
         preferences = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
-        String username = preferences.getString("username", "");
+        String username = preferences.getString("email", "");
         String password = preferences.getString("password", "");
-
-        usernameEditText.setText(username);
+        emailEditText.setText(username);
         passwordEditText.setText(password);
 
         mAuth = FirebaseAuth.getInstance();
+        mFireStore = FirebaseFirestore.getInstance();
+        mAccounts = mFireStore.collection("UserAccounts");
         mNotificationHelper = new NotificationHelper(this);
     }
 
     public void registration(View view) {
-        // TODO: validálás
-        String userName = usernameEditText.getText().toString();
+        String username = usernameEditText.getText().toString();
         if (("").equals(usernameEditText.getText().toString())) {
-            Log.e(LOG_TAG, "Felhasználónév megadása kötelező.");
-            Toast.makeText(RegistrationActivity.this, "AFelhasználónév megadása kötelező." , Toast.LENGTH_LONG).show();
+            Log.e(LOG_TAG, "Felhasználónév megadása kötelező!");
+            Toast.makeText(RegistrationActivity.this, "Felhasználónév megadása kötelező!" , Toast.LENGTH_LONG).show();
 
             return;
         }
-        String emailAddress = emailAddressEditText.getText().toString();
-        if (("").equals(emailAddressEditText.getText().toString())) {
-            Log.e(LOG_TAG, "E-mail cím megadása kötelező.");
-            Toast.makeText(RegistrationActivity.this, "E-mail cím megadása kötelező." , Toast.LENGTH_LONG).show();
+        String emailAddress = emailEditText.getText().toString();
+        if (("").equals(emailEditText.getText().toString())) {
+            Log.e(LOG_TAG, "E-mail cím megadása kötelező!");
+            Toast.makeText(RegistrationActivity.this, "E-mail cím megadása kötelező!" , Toast.LENGTH_LONG).show();
 
             return;
         }
         String password = passwordEditText.getText().toString();
         if (("").equals(passwordEditText.getText().toString()) || passwordEditText.getText().toString().length() < 6) {
-            Log.e(LOG_TAG, "Legalább 6 karakter hosszú jelszó megadása kötelező.");
-            Toast.makeText(RegistrationActivity.this, "Legalább 6 karakter hosszú jelszó megadása kötelező." , Toast.LENGTH_LONG).show();
+            Log.e(LOG_TAG, "Legalább 6 karakter hosszú jelszó megadása kötelező!");
+            Toast.makeText(RegistrationActivity.this, "Legalább 6 karakter hosszú jelszó megadása kötelező!" , Toast.LENGTH_LONG).show();
 
             return;
         }
         String passwordConfirm = passwordConfirmEditText.getText().toString();
         if (("").equals(passwordConfirmEditText.getText().toString())) {
-            Log.e(LOG_TAG, "Megerősítő jelszó megadása kötelező.");
-            Toast.makeText(RegistrationActivity.this, "Megerősítő jelszó megadása kötelező." , Toast.LENGTH_LONG).show();
+            Log.e(LOG_TAG, "Megerősítő jelszó megadása kötelező!");
+            Toast.makeText(RegistrationActivity.this, "Megerősítő jelszó megadása kötelező!" , Toast.LENGTH_LONG).show();
 
             return;
         }
         if (!password.equals(passwordConfirm)) {
-            Log.e(LOG_TAG, "A jelszó és a megerősítő jelszó nem egyezik.");
-            Toast.makeText(RegistrationActivity.this, "A jelszó és a megerősítő jelszó nem egyezik." , Toast.LENGTH_LONG).show();
+            Log.e(LOG_TAG, "A jelszó és a megerősítő jelszó nem egyezik!");
+            Toast.makeText(RegistrationActivity.this, "A jelszó és a megerősítő jelszó nem egyezik!" , Toast.LENGTH_LONG).show();
 
             return;
         }
@@ -101,6 +110,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(LOG_TAG, "Felhasználó sikeresen létrehozva.");
                             mNotificationHelper.send("Sikeres regisztráció!");
+                            mAccounts.add(new UserAccount(username, emailAddress, phoneNumberEditText.getText().toString()));
                             startWatchlist();
                         } else {
                             Log.d(LOG_TAG, "Felhasználó létrehozása sikertelen: " + task.getException().getMessage());

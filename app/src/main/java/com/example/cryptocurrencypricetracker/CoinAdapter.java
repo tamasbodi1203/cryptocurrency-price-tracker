@@ -13,33 +13,34 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.cryptocurrencypricetracker.entity.Coin;
 
 import java.util.ArrayList;
 
-public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.ViewHolder> implements Filterable {
+public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> implements Filterable {
     // Member variables.
-    private ArrayList<CoinItem> mItemData = new ArrayList<>();
-    private ArrayList<CoinItem> mItemDataAll = new ArrayList<>();
+    private ArrayList<Coin> mItemData = new ArrayList<>();
+    private ArrayList<Coin> mItemDataAll = new ArrayList<>();
     private Context mContext;
     private int lastPosition = -1;
 
-    CoinItemAdapter(Context context, ArrayList<CoinItem> itemsData) {
+    public CoinAdapter(Context context, ArrayList<Coin> itemsData) {
         this.mItemData = itemsData;
         this.mItemDataAll = itemsData;
         this.mContext = context;
     }
 
     @Override
-    public CoinItemAdapter.ViewHolder onCreateViewHolder(
+    public CoinAdapter.ViewHolder onCreateViewHolder(
             ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(mContext)
                 .inflate(R.layout.list_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(CoinItemAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(CoinAdapter.ViewHolder holder, int position) {
         // Get current sport.
-        CoinItem currentItem = mItemData.get(position);
+        Coin currentItem = mItemData.get(position);
 
         // Populate the textviews with data.
         holder.bindTo(currentItem);
@@ -69,7 +70,7 @@ public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.ViewHo
     private Filter shopingFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
-            ArrayList<CoinItem> filteredList = new ArrayList<>();
+            ArrayList<Coin> filteredList = new ArrayList<>();
             FilterResults results = new FilterResults();
 
             if(charSequence == null || charSequence.length() == 0) {
@@ -77,7 +78,7 @@ public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.ViewHo
                 results.values = mItemDataAll;
             } else {
                 String filterPattern = charSequence.toString().toLowerCase().trim();
-                for(CoinItem item : mItemDataAll) {
+                for(Coin item : mItemDataAll) {
                     if(item.getSymbol().toLowerCase().contains(filterPattern)){
                         filteredList.add(item);
                     }
@@ -120,7 +121,7 @@ public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.ViewHo
             });
         }
 
-        void bindTo(CoinItem currentItem){
+        void bindTo(Coin currentItem){
             mSymbolText.setText(currentItem.getSymbol());
             mPriceText.setText(new StringBuilder().append('$').append(String.valueOf(currentItem.getPrice())).toString());
 

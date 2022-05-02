@@ -10,16 +10,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptocurrencyPriceTracker">
         <activity
+            android:name=".activity.UserAccountActivity"
+            android:exported="false" />
+        <activity
             android:name=".BaseActivity2"
             android:exported="false" />
         <activity
-            android:name=".CoinListActivity"
+            android:name=".activity.CoinListActivity"
             android:exported="false" />
         <activity
-            android:name=".RegistrationActivity"
+            android:name=".activity.RegistrationActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

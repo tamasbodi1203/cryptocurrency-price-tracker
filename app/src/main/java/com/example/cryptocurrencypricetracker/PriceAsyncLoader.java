@@ -6,11 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
 
+import com.example.cryptocurrencypricetracker.entity.Coin;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
@@ -21,12 +22,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class PriceAsyncLoader extends AsyncTaskLoader<ArrayList<CoinItem>> {
+public class PriceAsyncLoader extends AsyncTaskLoader<ArrayList<Coin>> {
 
     private OkHttpClient okHttpClient = new OkHttpClient();
-    private ArrayList<CoinItem> mItemsData;
+    private ArrayList<Coin> mItemsData;
 
-    public PriceAsyncLoader(@NonNull Context context, ArrayList<CoinItem> mItemsData) {
+    public PriceAsyncLoader(@NonNull Context context, ArrayList<Coin> mItemsData) {
         super(context);
         this.mItemsData = mItemsData;
     }
@@ -40,7 +41,7 @@ public class PriceAsyncLoader extends AsyncTaskLoader<ArrayList<CoinItem>> {
 
     @Nullable
     @Override
-    public ArrayList<CoinItem> loadInBackground() {
+    public ArrayList<Coin> loadInBackground() {
 
         refreshPrices();
         return this.mItemsData;
@@ -49,9 +50,9 @@ public class PriceAsyncLoader extends AsyncTaskLoader<ArrayList<CoinItem>> {
     // Árfolyam frissítése
     private void refreshPrices() {
         String ids = "";
-        Iterator<CoinItem> iterator = mItemsData.iterator();
+        Iterator<Coin> iterator = mItemsData.iterator();
         while (iterator.hasNext()) {
-            CoinItem item = iterator.next();
+            Coin item = iterator.next();
             ids = ids + item.getCoinGeckoId() + "%2C";
             if (!iterator.hasNext()) {
                 ids = ids + item.getCoinGeckoId();
@@ -90,7 +91,7 @@ public class PriceAsyncLoader extends AsyncTaskLoader<ArrayList<CoinItem>> {
     private void parseResponse(String body) {
         try {
             JSONObject jsonObject = new JSONObject(body);
-            for (CoinItem item : mItemsData) {
+            for (Coin item : mItemsData) {
                 JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
 

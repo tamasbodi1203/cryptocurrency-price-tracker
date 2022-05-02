@@ -1,6 +1,6 @@
-package com.example.cryptocurrencypricetracker;
+package com.example.cryptocurrencypricetracker.entity;
 
-public class CoinItem {
+public class Coin {
 
     private String id;
     private String coinGeckoId;
@@ -8,9 +8,9 @@ public class CoinItem {
     private double price;
     private int imageResource;
 
-    public CoinItem() {}
+    public Coin() {}
 
-    public CoinItem(String coinGeckoId, String symbol, double price, int imageResource) {
+    public Coin(String coinGeckoId, String symbol, double price, int imageResource) {
         this.coinGeckoId = coinGeckoId;
         this.symbol = symbol;
         this.price = price;
