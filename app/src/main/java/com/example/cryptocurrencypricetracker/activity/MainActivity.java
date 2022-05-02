@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker;
+package com.example.cryptocurrencypricetracker.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.cryptocurrencypricetracker.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
-    EditText usernameEditText;
+    EditText emailEditText;
     EditText passwordEditText;
 
     @Override
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        usernameEditText = findViewById(R.id.usernameEditText);
+        emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
 
         preferences = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
@@ -90,10 +91,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void login(View view) {
 
-        String username = usernameEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
+        String email = emailEditText.getText().toString();
+        if (("").equals(emailEditText.getText().toString())) {
+            Log.e(LOG_TAG, "E-mail cím megadása kötelező!");
+            Toast.makeText(MainActivity.this, "E-mail cím megadása kötelező!" , Toast.LENGTH_LONG).show();
 
-        mAuth.signInWithEmailAndPassword(username, password)
+            return;
+        }
+        String password = passwordEditText.getText().toString();
+        if (("").equals(passwordEditText.getText().toString())) {
+            Log.e(LOG_TAG, "Jelszó megadása kötelező!");
+            Toast.makeText(MainActivity.this, "Jelszó megadása kötelező!" , Toast.LENGTH_LONG).show();
+
+            return;
+        }
+
+        mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -163,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("userName", usernameEditText.getText().toString()); // TODO: null lekezelése
+        editor.putString("email", emailEditText.getText().toString());
         editor.putString("password", passwordEditText.getText().toString());
         editor.apply();
     }

@@ -12,15 +12,14 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".activity.RegistrationActivity">
+            tools:context=".activity.UserAccountActivity">
 
             <TextView
-                android:id="@+id/registrationTextView"
+                android:id="@+id/accountDetailsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-
-                android:text="@string/registration"
+                android:text="@string/account_details"
 
                 android:textSize="24sp"
                 android:layout_alignParentStart="true"
@@ -28,65 +27,31 @@
                 android:textAlignment="center"
                 />
 
-            <EditText
-                android:id="@+id/usernameEditText"
+            <TextView
+                android:id="@+id/usernameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:ems="10"
-                android:hint="@string/username"
-                android:inputType="textPersonName"
+                android:layout_below="@+id/accountDetailsTextView"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@+id/registrationTextView"
-                />
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/username"
+                android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/emailAddressEditText"
+            <TextView
+                android:id="@+id/emailAddressTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:ems="10"
-                android:hint="@string/email_address"
-                android:inputType="textEmailAddress"
+                android:text="@string/email_address"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@+id/usernameEditText"
-                />
-
-            <EditText
-                android:id="@+id/passwordEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:ems="10"
-                android:hint="@string/password"
-                android:inputType="textPassword"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/emailAddressEditText"
-                />
-
-            <EditText
-                android:id="@+id/passwordConfirmEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:ems="10"
-                android:hint="@string/password_confirm"
-                android:inputType="textPassword"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/passwordEditText"
-                />
+                android:layout_below="@+id/usernameTextView"
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/phoneNumberEditText"
@@ -100,7 +65,7 @@
                 android:inputType="phone"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@+id/passwordConfirmEditText"
+                android:layout_below="@+id/emailAddressTextView"
                 />
 
             <LinearLayout
@@ -109,21 +74,20 @@
                 android:orientation="horizontal"
                 android:layout_below="@id/phoneNumberEditText"
                 android:layout_marginTop="50dp"
-                android:layout_marginBottom="50dp"
                 android:layout_centerHorizontal="true"
                 >
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/registration"
-                    android:onClick="registration"
+                    android:text="@string/update_details"
+                    android:onClick="updateAccount"
                     />
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:text="@string/cancel"
-                    android:onClick="cancel"
+                    android:text="@string/delete_account"
+                    android:onClick="deleteAccount"
                     />
             </LinearLayout>
         </RelativeLayout>

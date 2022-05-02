@@ -1,8 +1,7 @@
-package com.example.cryptocurrencypricetracker;
+package com.example.cryptocurrencypricetracker.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -15,24 +14,22 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
-import android.widget.Toast;
 
+import com.example.cryptocurrencypricetracker.entity.Coin;
+import com.example.cryptocurrencypricetracker.CoinAdapter;
+import com.example.cryptocurrencypricetracker.PriceAsyncLoader;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.entity.UserAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
@@ -43,22 +40,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CoinListActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<ArrayList<CoinItem>> {
+public class CoinListActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<ArrayList<Coin>> {
 
     private static final String LOG_TAG = CoinListActivity.class.getName();
 
     Handler handler = new Handler();
     private OkHttpClient okHttpClient = new OkHttpClient();
     private RecyclerView mRecyclerView;
-    private ArrayList<CoinItem> mItemsData;
-    private CoinItemAdapter mAdapter;
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
     private int gridNumber = 1;
-    private boolean viewRow = true;
-
-    private FirebaseFirestore mFireStore;
-    private CollectionReference mItems;
 
     private Runnable runnableCode = new Runnable() {
         @Override
@@ -77,26 +66,16 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coin_list);
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-        if (user != null) {
-            Log.d(LOG_TAG, "Autentikált felhasználó!");
-        } else {
-            Log.e(LOG_TAG, "Nem autentikált felhasználó!");
-            finish();
-        }
-
         showProgressDialog(this);
         mRecyclerView = findViewById(R.id.recycleView);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, gridNumber));
         mItemsData = new ArrayList<>();
 
-        mAdapter = new CoinItemAdapter(this, mItemsData);
+        mAdapter = new CoinAdapter(this, mItemsData);
         mRecyclerView.setAdapter(mAdapter);
 
-        mFireStore = FirebaseFirestore.getInstance();
-        mItems = mFireStore.collection("Items");
         queryData();
+        initUserAccount();
 
         // Periódikus árfolyam frissítés
         handler.post(runnableCode);
@@ -107,7 +86,7 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
 
         mItems.orderBy("symbol").get().addOnSuccessListener(queryDocumentSnapshots -> {
             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                CoinItem item = documentSnapshot.toObject(CoinItem.class);
+                Coin item = documentSnapshot.toObject(Coin.class);
                 item.setId(documentSnapshot.getId());
                 mItemsData.add(item);
             }
@@ -131,7 +110,7 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
 
         for (int i = 0; i < itemSymbol.length; i++) {
 //            mItemsData.add(new CoinItem(itemCoinGeckoId[i], itemSymbol[i], new BigDecimal(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
-            mItems.add(new CoinItem(itemCoinGeckoId[i], itemSymbol[i], Double.parseDouble(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
+            mItems.add(new Coin(itemCoinGeckoId[i], itemSymbol[i], Double.parseDouble(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
         }
 
         itemsImageResource.recycle();
@@ -144,8 +123,8 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.watchlist_menu, menu);
-        MenuItem menuItem = menu.findItem(R.id.search_bar);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        MenuItem searchMenuItem = menu.findItem(R.id.search_bar);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -159,6 +138,7 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
                 return false;
             }
         });
+
         return true;
     }
 
@@ -166,17 +146,19 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
+            case R.id.watchlist:
+                Log.d(LOG_TAG, "Kedvencek megnyomva!");
+                return true;
+
+            case R.id.accountDetails:
+                Log.d(LOG_TAG, "Fiókadatok megnyomva!");
+                startAccountDetails();
+                return true;
+
             case R.id.logout:
                 Log.d(LOG_TAG, "Kijelentkezés megnyomva!");
                 logout();
                 return true;
-            case R.id.settings:
-                Log.d(LOG_TAG, "Beállítások megnyomva!");
-                return true;
-            case R.id.watchlist:
-                Log.d(LOG_TAG, "Kedvencek megnyomva!");
-                return true;
-            //case R.id.viewSelector:
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -191,24 +173,24 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
 
     @NonNull
     @Override
-    public Loader<ArrayList<CoinItem>> onCreateLoader(int id, @Nullable Bundle args) {
+    public Loader<ArrayList<Coin>> onCreateLoader(int id, @Nullable Bundle args) {
         return new PriceAsyncLoader(this, mItemsData);
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader<ArrayList<CoinItem>> loader, ArrayList<CoinItem> data) {
+    public void onLoadFinished(@NonNull Loader<ArrayList<Coin>> loader, ArrayList<Coin> data) {
         mAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onLoaderReset(@NonNull Loader<ArrayList<CoinItem>> loader) {}
+    public void onLoaderReset(@NonNull Loader<ArrayList<Coin>> loader) {}
 
     // Árfolyam frissítése
     private void refreshPrices() {
         String ids = "";
-        Iterator<CoinItem> iterator = mItemsData.iterator();
+        Iterator<Coin> iterator = mItemsData.iterator();
         while (iterator.hasNext()) {
-            CoinItem item = iterator.next();
+            Coin item = iterator.next();
             ids = ids + item.getCoinGeckoId() + "%2C";
             if (!iterator.hasNext()) {
                 ids = ids + item.getCoinGeckoId();
@@ -247,10 +229,10 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
     private void parseResponse(String body) {
         try {
             JSONObject jsonObject = new JSONObject(body);
-            for (CoinItem item : mItemsData) {
+            for (Coin item : mItemsData) {
                 JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
-                Log.d(LOG_TAG, item.getSymbol() + " jelenlegi ár: $" + priceString);
+                Log.d(LOG_TAG, item.getSymbol() + " latest price: $" + priceString);
                 mItems.document(item._getId()).update("price", Double.parseDouble(priceString));
 
                 item.setPrice(Double.parseDouble(priceString));
@@ -262,8 +244,23 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
 
     }
 
-    private void logout() {
-        mAuth.signOut();
-        finishAffinity();
+    private void initUserAccount() {
+        mAccounts.whereEqualTo("emailAddress", mUser.getEmail())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                                userAccount = document.toObject(UserAccount.class);
+                                userAccount.setId(document.getId());
+                            }
+                        } else {
+                            Log.d(LOG_TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        System.out.println("valami");
     }
 }

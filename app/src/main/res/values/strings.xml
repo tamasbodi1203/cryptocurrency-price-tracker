@@ -16,6 +16,11 @@
     <string name="item_price">Ár</string>
     <string name="item_symbol">Szimbólum</string>
     <string name="loginAsGuest">Bejelentkezés vendégként</string>
+    <string name="delete">Törlés</string>
+    <string name="account_details">Fiókadatok</string>
+    <string name="phoneNumber">Telefonszám</string>
+    <string name="delete_account">Fiók törlése</string>
+    <string name="update_details">Adatok módosítása</string>
 
     <string-array name="cryptocurrency_item_coin_gecko_ids">
         <item>bitcoin</item>

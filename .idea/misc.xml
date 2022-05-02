@@ -3,11 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout-land/activity_main.xml" value="0.34656084656084657" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_base.xml" value="0.409375" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_coin_list.xml" value="0.23867753623188406" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_cryptocurrency_list.xml" value="0.20625" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_registration.xml" value="0.17255434782608695" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_registration.xml" value="0.25" />
+        <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_user_account.xml" value="0.409375" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_watch_list.xml" value="0.18795289855072464" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/activity_watchlist.xml" value="0.5" />
         <entry key="..\:/Egyetem/cryptocurrency-price-tracker/app/src/main/res/layout/list_item.xml" value="0.33" />
