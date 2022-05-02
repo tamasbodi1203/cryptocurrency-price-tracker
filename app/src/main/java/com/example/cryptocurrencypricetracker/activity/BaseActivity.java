@@ -10,15 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cryptocurrencypricetracker.NotificationHelper;
 import com.example.cryptocurrencypricetracker.entity.Coin;
-import com.example.cryptocurrencypricetracker.CoinAdapter;
+import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
 import com.example.cryptocurrencypricetracker.R;
 import com.example.cryptocurrencypricetracker.entity.UserAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -31,8 +34,10 @@ public class BaseActivity extends AppCompatActivity {
     protected static FirebaseUser mUser;
     protected static FirebaseFirestore mFireStore;
     protected static CollectionReference mItems;
-    protected static CollectionReference mAccounts;
+    protected static CollectionReference mUserAccounts;
+
     protected static ArrayList<Coin> mItemsData;
+    protected static ArrayList<Coin> mWatchlistData;
     protected CoinAdapter mAdapter;
 
     public ProgressDialog mProgressDialog;
@@ -47,26 +52,19 @@ public class BaseActivity extends AppCompatActivity {
         mUser = mAuth.getCurrentUser();
 
         mItems = mFireStore.collection("Items");
-        mAccounts = mFireStore.collection("UserAccounts");
-        if (mUser != null) {
-            Log.d(LOG_TAG, "Autentikált felhasználó!");
-        } else {
-            Log.e(LOG_TAG, "Nem autentikált felhasználó!");
-            finish();
-        }
+        mUserAccounts = mFireStore.collection("UserAccounts");
         mNotificationHelper = new NotificationHelper(this);
     }
 
-    public void showProgressDialog(Context context) {
+    public void showProgressDialog(Context context, String message) {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(context);
-            mProgressDialog.setMessage("Árfolyamok frissítése...");
+            mProgressDialog.setMessage(message);
             mProgressDialog.setIndeterminate(true);
         }
 
         mProgressDialog.show();
     }
-
 
     public void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
@@ -80,6 +78,12 @@ public class BaseActivity extends AppCompatActivity {
         hideProgressDialog();
     }
 
+    protected void startWatchlist() {
+        Intent intent = new Intent(this, WatchlistActivity.class);
+        intent.putExtra("SECRET_KEY", SECRET_KEY);
+        startActivity(intent);
+    }
+
     protected void startAccountDetails() {
         Intent intent = new Intent(this, UserAccountActivity.class);
         intent.putExtra("SECRET_KEY", SECRET_KEY);
@@ -91,6 +95,25 @@ public class BaseActivity extends AppCompatActivity {
         finishAffinity();
         startActivity(new Intent(this, MainActivity.class));
         userAccount = null;
+    }
+
+    public boolean isSignedInUser() {
+        return mUser != null && mUser.getEmail() != null && !("").equals(mUser.getEmail());
+    }
+
+    public void addToWatchlist(Coin coin) {
+        if (isSignedInUser()) {
+            mUserAccounts.document(userAccount._getId()).update("watchlistItems", FieldValue.arrayUnion(coin));
+        }
+        mWatchlistData.add(coin);
+        Collections.sort(mWatchlistData, (o1, o2) -> o1.getSymbol().compareTo(o2.getSymbol()));
+    }
+
+    public void removeFromWatchlist(Coin coin) {
+        if (isSignedInUser()) {
+            mUserAccounts.document(userAccount._getId()).update("watchlistItems", FieldValue.arrayRemove(coin));
+        }
+        mWatchlistData.remove(coin);
     }
 
 }
