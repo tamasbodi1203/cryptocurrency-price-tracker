@@ -88,6 +88,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
 
         mRecyclerView = findViewById(R.id.recycleView);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, gridNumber));
+        mRecyclerView.setVisibility(View.GONE);
         mItemsData = new ArrayList<>();
 
         mAdapter = new CoinItemAdapter(this, mItemsData);
@@ -97,7 +98,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
         mItems = mFireStore.collection("Items");
         queryData();
 
-        // Periódikusan frissítjük az árfolyamot
+        // Periódikus árfolyam frissítés
         handler.post(runnableCode);
     }
 
@@ -116,6 +117,8 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
                 queryData();
             }
             mAdapter.notifyDataSetChanged();
+            findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
     }
 
@@ -248,7 +251,7 @@ public class CoinListActivity extends AppCompatActivity implements LoaderManager
             for (CoinItem item : mItemsData) {
                 JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
-                Log.d(LOG_TAG, item.getSymbol() + " jelenlegi ár: " + priceString);
+                Log.d(LOG_TAG, item.getSymbol() + " jelenlegi ár: $" + priceString);
                 mItems.document(item._getId()).update("price", Double.parseDouble(priceString));
 
                 item.setPrice(Double.parseDouble(priceString));

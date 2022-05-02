@@ -11,7 +11,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 public class NotificationHelper {
-    private static final String CHANNEL_ID = "watcher_notification_channel";
+    private static final String CHANNEL_ID = "tracker_notification_channel";
     private final int NOTIFICATION_ID = 0;
 
     private NotificationManager mNotifyManager;
