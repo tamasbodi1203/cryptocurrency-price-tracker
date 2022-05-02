@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(LOG_TAG, "Sikeres Google bejelentkezés!");
-                    startWatchlist();
+                    startCoinList();
                 } else {
                     Log.d(LOG_TAG, "Google bejelentkezés sikertelen: " + task.getException().getMessage());
                     Toast.makeText(MainActivity.this, "Bejelentkezés sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(LOG_TAG, "Sikeres bejelentkezés!");
-                    startWatchlist();
+                    startCoinList();
                 } else {
                     Log.d(LOG_TAG, "Bejelentkezés sikertelen: " + task.getException().getMessage());
                     Toast.makeText(MainActivity.this, "Bejelentkezés sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(LOG_TAG, "Sikeres bejelentkezés vendégként!");
-                    startWatchlist();
+                    startCoinList();
                 } else {
                     Log.d(LOG_TAG, "Sikertelen bejelentkezés vendégként: " + task.getException().getMessage());
                     Toast.makeText(MainActivity.this, "Bejelentkezés sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void startWatchlist() {
-        Intent intent = new Intent(this, coinListActivity.class);
+    private void startCoinList() {
+        Intent intent = new Intent(this, CoinListActivity.class);
         intent.putExtra("SECRET_KEY", SECRET_KEY);
         startActivity(intent);
     }

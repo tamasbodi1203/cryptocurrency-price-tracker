@@ -24,6 +24,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
     private FirebaseAuth mAuth;
+    private NotificationHelper mNotificationHelper;
 
     EditText usernameEditText;
     EditText emailAddressEditText;
@@ -53,17 +54,42 @@ public class RegistrationActivity extends AppCompatActivity {
         passwordEditText.setText(password);
 
         mAuth = FirebaseAuth.getInstance();
+        mNotificationHelper = new NotificationHelper(this);
     }
 
     public void registration(View view) {
         // TODO: validálás
         String userName = usernameEditText.getText().toString();
-        String emailAddress = emailAddressEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
-        String passwordConfirm = passwordConfirmEditText.getText().toString();
+        if (("").equals(usernameEditText.getText().toString())) {
+            Log.e(LOG_TAG, "Felhasználónév megadása kötelező.");
+            Toast.makeText(RegistrationActivity.this, "AFelhasználónév megadása kötelező." , Toast.LENGTH_LONG).show();
 
+            return;
+        }
+        String emailAddress = emailAddressEditText.getText().toString();
+        if (("").equals(emailAddressEditText.getText().toString())) {
+            Log.e(LOG_TAG, "E-mail cím megadása kötelező.");
+            Toast.makeText(RegistrationActivity.this, "E-mail cím megadása kötelező." , Toast.LENGTH_LONG).show();
+
+            return;
+        }
+        String password = passwordEditText.getText().toString();
+        if (("").equals(passwordEditText.getText().toString()) || passwordEditText.getText().toString().length() < 6) {
+            Log.e(LOG_TAG, "Legalább 6 karakter hosszú jelszó megadása kötelező.");
+            Toast.makeText(RegistrationActivity.this, "Legalább 6 karakter hosszú jelszó megadása kötelező." , Toast.LENGTH_LONG).show();
+
+            return;
+        }
+        String passwordConfirm = passwordConfirmEditText.getText().toString();
+        if (("").equals(passwordConfirmEditText.getText().toString())) {
+            Log.e(LOG_TAG, "Megerősítő jelszó megadása kötelező.");
+            Toast.makeText(RegistrationActivity.this, "Megerősítő jelszó megadása kötelező." , Toast.LENGTH_LONG).show();
+
+            return;
+        }
         if (!password.equals(passwordConfirm)) {
             Log.e(LOG_TAG, "A jelszó és a megerősítő jelszó nem egyezik.");
+            Toast.makeText(RegistrationActivity.this, "A jelszó és a megerősítő jelszó nem egyezik." , Toast.LENGTH_LONG).show();
 
             return;
         }
@@ -74,6 +100,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(LOG_TAG, "Felhasználó sikeresen létrehozva.");
+                            mNotificationHelper.send("Sikeres regisztráció!");
                             startWatchlist();
                         } else {
                             Log.d(LOG_TAG, "Felhasználó létrehozása sikertelen: " + task.getException().getMessage());
@@ -88,7 +115,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void startWatchlist() {
-        Intent intent = new Intent(this, coinListActivity.class);
+        Intent intent = new Intent(this, CoinListActivity.class);
         intent.putExtra("SECRET_KEY", SECRET_KEY);
         startActivity(intent);
     }

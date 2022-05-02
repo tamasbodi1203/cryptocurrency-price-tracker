@@ -1,19 +1,32 @@
 package com.example.cryptocurrencypricetracker;
 
-import java.math.BigDecimal;
-
 public class CoinItem {
-    private String symbol;
-    private BigDecimal price;
-    private final int imageResource;
 
-    public CoinItem(String name, BigDecimal price, int imageResource) {
-        this.symbol = name;
+    private String id;
+    private String coinGeckoId;
+    private String symbol;
+    private double price;
+    private int imageResource;
+
+    public CoinItem() {}
+
+    public CoinItem(String coinGeckoId, String symbol, double price, int imageResource) {
+        this.coinGeckoId = coinGeckoId;
+        this.symbol = symbol;
         this.price = price;
         this.imageResource = imageResource;
     }
 
-    String getSymbol() {return symbol;}
-    BigDecimal getPrice() {return price;}
+    public String _getId() {return id;}
+    public String getCoinGeckoId() {return coinGeckoId;}
+    public String getSymbol() {return symbol;}
+    public double getPrice() {return price;}
     public int getImageResource() {return imageResource;}
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }
