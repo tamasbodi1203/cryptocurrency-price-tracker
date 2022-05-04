@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptocurrencyPriceTracker">
         <activity
+            android:name=".activity.WatchlistActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.UserAccountActivity"
             android:exported="false" />
         <activity

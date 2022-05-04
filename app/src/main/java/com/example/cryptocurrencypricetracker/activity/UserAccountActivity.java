@@ -25,9 +25,7 @@ public class UserAccountActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_account);
-
-        if (mUser.getEmail() != null) {
+        if (isSignedInUser()) {
             Log.d(LOG_TAG, "Regisztrált felhasználó!");
         } else {
             Log.e(LOG_TAG, "Nem regisztrált felhasználó!");
@@ -35,7 +33,7 @@ public class UserAccountActivity extends BaseActivity {
             finish();
             return;
         }
-
+        setContentView(R.layout.activity_user_account);
         usernameTextView = findViewById(R.id.usernameTextView);
         emailTextView = findViewById(R.id.emailAddressTextView);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
@@ -51,9 +49,10 @@ public class UserAccountActivity extends BaseActivity {
 
     public void updateAccount(View view) {
         String phoneNumber = phoneNumberEditText.getText().toString();
-        mAccounts.document(userAccount._getId()).update("phoneNumber", phoneNumber);
+        mUserAccounts.document(userAccount._getId()).update("phoneNumber", phoneNumber);
         userAccount.setPhoneNumber(phoneNumber);
         Log.d(LOG_TAG, "User account details updated.");
+        finish();
     }
 
     public void deleteAccount(View view) {
@@ -62,7 +61,7 @@ public class UserAccountActivity extends BaseActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            mAccounts.document(userAccount._getId()).delete();
+                            mUserAccounts.document(userAccount._getId()).delete();
                             Log.d(LOG_TAG, "User account deleted.");
                             mNotificationHelper.send("Fiók sikeresen törölve!");
                         }

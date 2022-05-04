@@ -21,6 +21,8 @@
     <string name="phoneNumber">Telefonszám</string>
     <string name="delete_account">Fiók törlése</string>
     <string name="update_details">Adatok módosítása</string>
+    <string name="item_percentage_change">Árváltozás</string>
+    <string name="your_watchlist_is_empty">A listád jelenleg üres.</string>
 
     <string-array name="cryptocurrency_item_coin_gecko_ids">
         <item>bitcoin</item>
@@ -52,6 +54,14 @@
         <item>400</item>
         <item>90</item>
         <item>0.6</item>
+    </string-array>
+
+    <string-array name="cryptocurrency_item_percentage_changes">
+        <item>0.1</item>
+        <item>0.1</item>
+        <item>0.1</item>
+        <item>0.1</item>
+        <item>0.1</item>
     </string-array>
 
 </resources>

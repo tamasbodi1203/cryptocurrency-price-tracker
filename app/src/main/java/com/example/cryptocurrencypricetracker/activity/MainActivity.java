@@ -1,8 +1,5 @@
 package com.example.cryptocurrencypricetracker.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,7 +8,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.entity.UserAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -23,8 +23,13 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class MainActivity extends BaseActivity {
 
     private static final String LOG_TAG = MainActivity.class.getName();
     private static final String PREF_KEY = MainActivity.class.getPackage().toString();
@@ -32,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
     private SharedPreferences preferences;
-    private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
     EditText emailEditText;
@@ -42,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFireStore = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        mUserAccounts = mFireStore.collection("UserAccounts");
 
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -112,13 +120,15 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(LOG_TAG, "Sikeres bejelentkezés!");
-                    startCoinList();
+                    initUserAccount();
                 } else {
                     Log.d(LOG_TAG, "Bejelentkezés sikertelen: " + task.getException().getMessage());
                     Toast.makeText(MainActivity.this, "Bejelentkezés sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    hideProgressDialog();
                 }
             }
         });
+        showProgressDialog(this, "Firebase autentikáció folyamatban...");
     }
 
     public void loginWithGoogle(View view) {
@@ -133,13 +143,38 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(LOG_TAG, "Sikeres bejelentkezés vendégként!");
+                    mWatchlistData = new ArrayList<>();
                     startCoinList();
                 } else {
                     Log.d(LOG_TAG, "Sikertelen bejelentkezés vendégként: " + task.getException().getMessage());
                     Toast.makeText(MainActivity.this, "Bejelentkezés sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    hideProgressDialog();
                 }
             }
         });
+        showProgressDialog(this, "Firebase autentikáció folyamatban...");
+    }
+
+    private void initUserAccount() {
+        mProgressDialog.setMessage("Felhasználói fiók inicializálása...");
+        mUserAccounts.whereEqualTo("emailAddress", mAuth.getCurrentUser().getEmail())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                                userAccount = document.toObject(UserAccount.class);
+                                userAccount.setId(document.getId());
+                                mWatchlistData = userAccount.getWatchlistItems();
+                                startCoinList();
+                            }
+                        } else {
+                            Log.d(LOG_TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 
     private void startCoinList() {
@@ -157,21 +192,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
 
@@ -181,13 +201,4 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 }
