@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -27,22 +26,22 @@ import com.example.cryptocurrencypricetracker.entity.Coin;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> implements Filterable {
 
     private static final String LOG_TAG = CoinAdapter.class.getName();
     private static final DecimalFormat df_price = new DecimalFormat("0.0000");
     private static final DecimalFormat df_percentage = new DecimalFormat("0.00");
-    private ArrayList<Coin> mItemData;
-    private ArrayList<Coin> mWatchlistData;
-    private ArrayList<Coin> mItemDataAll;
-    private Context mContext;
+    private ArrayList<Coin> mCoinsData;
+    private final ArrayList<Coin> mWatchlistData;
+    private final ArrayList<Coin> mItemDataAll;
+    private final Context mContext;
     private int lastPosition = -1;
-    private boolean isWatchlist;
+    private final boolean isWatchlist;
+    private long mLastClickTime = 0;
 
     public CoinAdapter(Context context, ArrayList<Coin> itemsData, ArrayList<Coin> watchlistData, Boolean isWatchlist) {
-        this.mItemData = itemsData;
+        this.mCoinsData = itemsData;
         this.mItemDataAll = itemsData;
         this.mWatchlistData = watchlistData;
         this.mContext = context;
@@ -59,7 +58,7 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
     public void onBindViewHolder(CoinAdapter.ViewHolder holder, int position) {
         Coin currentItem;
         if (!isWatchlist) {
-            currentItem = mItemData.get(position);
+            currentItem = mCoinsData.get(position);
         } else {
             currentItem = mWatchlistData.get(position);
         }
@@ -80,7 +79,7 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
 
     @Override
     public int getItemCount() {
-        return mItemData.size();
+        return mCoinsData.size();
     }
 
     @Override
@@ -88,7 +87,7 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
         return coinFilter;
     }
 
-    private Filter coinFilter = new Filter() {
+    private final Filter coinFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             ArrayList<Coin> filteredList = new ArrayList<>();
@@ -114,18 +113,18 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            mItemData = (ArrayList)filterResults.values;
+            mCoinsData = (ArrayList)filterResults.values;
             notifyDataSetChanged();
         }
     };
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView mSymbolText;
-        private TextView mPriceText;
-        private TextView mPercentageChangeText;
-        private Switch mWatchlistToggleButton;
-        private ImageView mItemImage;
+        private final TextView mSymbolText;
+        private final TextView mPriceText;
+        private final TextView mPercentageChangeText;
+        private final Switch mWatchlistToggleButton;
+        private final ImageView mItemImage;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -136,14 +135,16 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
             mPercentageChangeText = itemView.findViewById(R.id.itemChangePercent);
             mWatchlistToggleButton = itemView.findViewById(R.id.itemWatchlistSwitch);
 
-            mWatchlistToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            mWatchlistToggleButton.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Coin coin = mItemData.stream()
+                @Override
+                public void onClick(View view) {
+                    // Gombnyomás spamolás elleni védelem
+                    mWatchlistToggleButton.setClickable(false);
+                    Coin coin = mCoinsData.stream()
                             .filter(e -> e.getSymbol().equals(mSymbolText.getText().toString())).findAny().orElseThrow(null);
-                    if (isChecked) {
-                        if (!mWatchlistData.contains(coin)){
-                            // TODO: Csak regisztrált felhasználó esetén mentsük le
+                    if (mWatchlistToggleButton.isChecked()) {
+                        if (!mWatchlistData.contains(coin)) {
                             ((BaseActivity) mContext).addToWatchlist(coin);
                         }
                     } else {
@@ -152,6 +153,11 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
                             deleteItem(itemView);
                         }
                     }
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            mWatchlistToggleButton.setClickable(true);
+                        }
+                    }, 400);
                 }
             });
         }
@@ -197,5 +203,6 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
             }
 
         }, animation.getDuration());
+        Switch mWatchlistToggleButton = itemView.findViewById(R.id.itemWatchlistSwitch);
     }
 }

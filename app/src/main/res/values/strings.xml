@@ -30,6 +30,11 @@
         <item>binancecoin</item>
         <item>solana</item>
         <item>ripple</item>
+        <item>terra-luna</item>
+        <item>cardano</item>
+        <item>dogecoin</item>
+        <item>avalanche-2</item>
+        <item>polkadot</item>
     </string-array>
 
     <string-array name="cryptocurrency_item_symbols">
@@ -38,6 +43,23 @@
         <item>BNB</item>
         <item>SOL</item>
         <item>XRP</item>
+        <item>LUNA</item>
+        <item>ADA</item>
+        <item>DOGE</item>
+        <item>AVAX</item>
+        <item>DOT</item>
+
+<!--        <item>SHIB</item>-->
+<!--        <item>MATIC</item>-->
+<!--        <item>DAI</item>-->
+<!--        <item>NEAR</item>-->
+<!--        <item>TRX</item>-->
+
+<!--        <item>CRO</item>-->
+<!--        <item>LTC</item>-->
+<!--        <item>BCH</item>-->
+<!--        <item>LEO</item>-->
+<!--        <item>LINK</item>-->
     </string-array>
 
     <array name="cryptocurrency_item_images">
@@ -46,6 +68,23 @@
         <item>@drawable/bnb</item>
         <item>@drawable/sol</item>
         <item>@drawable/xrp</item>
+        <item>@drawable/luna</item>
+        <item>@drawable/cardano</item>
+        <item>@drawable/doge</item>
+        <item>@drawable/avax</item>
+        <item>@drawable/polkadot</item>
+
+<!--        <item>@drawable/btc</item>-->
+<!--        <item>@drawable/eth</item>-->
+<!--        <item>@drawable/bnb</item>-->
+<!--        <item>@drawable/sol</item>-->
+<!--        <item>@drawable/xrp</item>-->
+
+<!--        <item>@drawable/btc</item>-->
+<!--        <item>@drawable/eth</item>-->
+<!--        <item>@drawable/bnb</item>-->
+<!--        <item>@drawable/sol</item>-->
+<!--        <item>@drawable/xrp</item>-->
     </array>
 
     <string-array name="cryptocurrency_item_prices">
@@ -54,14 +93,24 @@
         <item>400</item>
         <item>90</item>
         <item>0.6</item>
+        <item>84.66</item>
+        <item>0.8232</item>
+        <item>0.1308</item>
+        <item>60.85</item>
+        <item>15.18</item>
     </string-array>
 
     <string-array name="cryptocurrency_item_percentage_changes">
-        <item>0.1</item>
-        <item>0.1</item>
-        <item>0.1</item>
-        <item>0.1</item>
-        <item>0.1</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
     </string-array>
 
 </resources>
