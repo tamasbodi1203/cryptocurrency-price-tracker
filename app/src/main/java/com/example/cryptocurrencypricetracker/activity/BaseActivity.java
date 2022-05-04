@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.cryptocurrencypricetracker.repository.CoinRepository;
 import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
@@ -13,6 +15,7 @@ import com.example.cryptocurrencypricetracker.entity.Coin;
 import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
 import com.example.cryptocurrencypricetracker.R;
 import com.example.cryptocurrencypricetracker.entity.UserAccount;
+import com.example.cryptocurrencypricetracker.view.ViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,16 +27,8 @@ public class BaseActivity extends AppCompatActivity {
 
     protected static final String LOG_TAG = BaseActivity.class.getName();
     protected static final int SECRET_KEY = 99;
-
-    protected static FirebaseAuth mAuth;
-    protected static CollectionReference mCoins;
-
-    protected static ArrayList<Coin> mCoinsData;
-    protected static ArrayList<Coin> mWatchlistData;
-    protected static UserAccount mUserAccountData;
-    protected static UserAccountRepository userAccountRepository;
-    protected static CoinRepository coinRepository;
     protected CoinAdapter mAdapter;
+    protected ViewModel viewModel;
 
     public ProgressDialog mProgressDialog;
 
@@ -42,8 +37,7 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coin_list);
 
-        mAuth = FirebaseAuth.getInstance();
-
+        viewModel = new ViewModelProvider(this).get(ViewModel.class);
     }
 
     public void showProgressDialog(Context context, String message) {
@@ -81,28 +75,34 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void logout() {
-        mAuth.signOut();
         finishAffinity();
+        FirebaseAuth.getInstance().signOut();
+        UserAccountRepository.getInstance().clear();
+        viewModel = null;
         startActivity(new Intent(this, MainActivity.class));
-        mUserAccountData = null;
+        Toast.makeText(BaseActivity.this, "Kijelentkezve.", Toast.LENGTH_SHORT).show();
     }
 
     public boolean isSignedInUser() {
-        return mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getEmail() != null && !("").equals(mAuth.getCurrentUser().getEmail());
+        return FirebaseAuth.getInstance().getCurrentUser() != null
+                && FirebaseAuth.getInstance().getCurrentUser().getEmail() != null
+                && !("").equals(FirebaseAuth.getInstance().getCurrentUser().getEmail());
     }
 
     public void addToWatchlist(Coin coin) {
+        ArrayList<Coin> mWatchlistData = viewModel.getUserAccountData().getWatchlist();
         mWatchlistData.add(coin);
         Collections.sort(mWatchlistData, (o1, o2) -> o1.getSymbol().compareTo(o2.getSymbol()));
         if (isSignedInUser()) {
-            userAccountRepository.addToUsersWatchlist(mUserAccountData, mWatchlistData);
+            viewModel.addToWatchlist(mWatchlistData);
         }
     }
 
     public void removeFromWatchlist(Coin coin) {
+        ArrayList<Coin> mWatchlistData = viewModel.getUserAccountData().getWatchlist();
         mWatchlistData.remove(coin);
         if (isSignedInUser()) {
-            userAccountRepository.removeFromUsersWatchlist(mUserAccountData, mWatchlistData);
+            viewModel.removeFromWatchlist(mWatchlistData);
         }
     }
 

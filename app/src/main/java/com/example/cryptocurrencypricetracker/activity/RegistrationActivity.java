@@ -1,13 +1,11 @@
 package com.example.cryptocurrencypricetracker.activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -15,22 +13,15 @@ import android.widget.Toast;
 
 import com.example.cryptocurrencypricetracker.NotificationHelper;
 import com.example.cryptocurrencypricetracker.R;
-import com.example.cryptocurrencypricetracker.entity.Coin;
 import com.example.cryptocurrencypricetracker.entity.UserAccount;
 import com.example.cryptocurrencypricetracker.repository.CoinRepository;
 import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
+import com.example.cryptocurrencypricetracker.view.ViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -42,12 +33,13 @@ public class RegistrationActivity extends BaseActivity {
 
     private SharedPreferences preferences;
     private NotificationHelper mNotificationHelper;
+    private ViewModel viewModel;
 
-    EditText usernameEditText;
-    EditText emailEditText;
-    EditText passwordEditText;
-    EditText passwordConfirmEditText;
-    EditText phoneNumberEditText;
+    private EditText usernameEditText;
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private EditText passwordConfirmEditText;
+    private EditText phoneNumberEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +64,7 @@ public class RegistrationActivity extends BaseActivity {
         passwordEditText.setText(password);
 
         mNotificationHelper = new NotificationHelper(this);
+        viewModel = new ViewModelProvider(this).get(ViewModel.class);
     }
 
     public void registration(View view) {
@@ -110,18 +103,19 @@ public class RegistrationActivity extends BaseActivity {
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(emailAddress, password)
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailAddress, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(LOG_TAG, "Felhasználó sikeresen létrehozva.");
                             mNotificationHelper.send("Sikeres regisztráció!");
-                            userAccountRepository.createUserAccount(new UserAccount(username, emailAddress, phoneNumberEditText.getText().toString(), new ArrayList<>()));
-                            initSignedInData();
+                            viewModel.createUserAccount(new UserAccount(username, emailAddress, phoneNumberEditText.getText().toString(), new ArrayList<>()));
+                            initSignedInUser();
                         } else {
                             Log.d(LOG_TAG, "Felhasználó létrehozása sikertelen: " + task.getException().getMessage());
                             Toast.makeText(RegistrationActivity.this, "Felhasználó létrehozása sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            hideProgressDialog();
                         }
                     }
                 });
@@ -132,70 +126,26 @@ public class RegistrationActivity extends BaseActivity {
         finish();
     }
 
-    private void startCoinList() {
-        Intent intent = new Intent(this, CoinListActivity.class);
-        intent.putExtra("SECRET_KEY", SECRET_KEY);
-        startActivity(intent);
-    }
-
-    private void initSignedInData() {
-        Task getSignedInUserAccount = userAccountRepository.getSignedInUserAccount();
-        Task getCoins = coinRepository.getCoins();
-        Task<Void> allTasks = Tasks.whenAll(getSignedInUserAccount, getCoins);
-        allTasks.addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void initSignedInUser() {
+        Task<Void> initTasks = Tasks.whenAll(UserAccountRepository.getInstance().initUserAccount(), CoinRepository.getInstance().initCoins());
+        initTasks.addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onSuccess(Void unused) {
-                QuerySnapshot querySnapshot = (QuerySnapshot) getSignedInUserAccount.getResult();
-                for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                    mUserAccountData = documentSnapshot.toObject(UserAccount.class);
-                    mUserAccountData.setId(documentSnapshot.getId());
-                    mWatchlistData = mUserAccountData.getWatchlistItems();
-                }
-
-                QuerySnapshot coinQuerySnapShot = (QuerySnapshot) getCoins.getResult();
-                for (DocumentSnapshot documentSnapshot : coinQuerySnapShot.getDocuments()) {
-                    Coin coin = documentSnapshot.toObject(Coin.class);
-                    coin.setId(documentSnapshot.getId());
-                    mCoinsData.add(coin);
-                }
-                if (coinQuerySnapShot.getDocuments().isEmpty()) {
-                    initDataFromFile();
-                    Task getCoinsRecall = coinRepository.getCoins();
-                    Task<Void> recall = Tasks.whenAll(getCoinsRecall);
-                    recall.addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            QuerySnapshot coinQuerySnapShot = (QuerySnapshot) getCoinsRecall.getResult();
-                            for (DocumentSnapshot documentSnapshot : coinQuerySnapShot.getDocuments()) {
-                                Coin coin = documentSnapshot.toObject(Coin.class);
-                                coin.setId(documentSnapshot.getId());
-                                mCoinsData.add(coin);
-                            }
-                            startCoinList();
-                        }
-                    });
-                } else {
+            public void onComplete(@NonNull Task<Void> task) {
+                if (initTasks.isSuccessful()) {
                     startCoinList();
+                    Toast.makeText(RegistrationActivity.this, "Bejelentkezve.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(LOG_TAG, "Bejelentkezés sikertelen: " + initTasks.getException().getMessage());
                 }
             }
         });
     }
 
-    private void initDataFromFile() {
-        String[] itemCoinGeckoId = getResources().getStringArray(R.array.cryptocurrency_item_coin_gecko_ids);
-        String[] itemSymbol = getResources().getStringArray(R.array.cryptocurrency_item_symbols);
-        String[] itemsPrice = getResources().getStringArray(R.array.cryptocurrency_item_prices);
-        String[] itemsPercentageChange = getResources().getStringArray(R.array.cryptocurrency_item_percentage_changes);
-        TypedArray itemsImageResource = getResources().obtainTypedArray(R.array.cryptocurrency_item_images);
-
-
-        for (int i = 0; i < itemSymbol.length; i++) {
-            Coin coin = new Coin(itemCoinGeckoId[i], itemSymbol[i], Double.parseDouble(itemsPrice[i]), Double.parseDouble(itemsPercentageChange[i]), itemsImageResource.getResourceId(i, 0));
-            coinRepository.addCoin(coin);
-        }
-
-        itemsImageResource.recycle();
-
+    private void startCoinList() {
+        Intent intent = new Intent(this, CoinListActivity.class);
+        intent.putExtra("SECRET_KEY", SECRET_KEY);
+        startActivity(intent);
+        finish();
     }
 
 }

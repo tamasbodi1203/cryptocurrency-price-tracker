@@ -24,6 +24,7 @@ import com.example.cryptocurrencypricetracker.R;
 import com.example.cryptocurrencypricetracker.activity.BaseActivity;
 import com.example.cryptocurrencypricetracker.entity.Coin;
 
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -33,18 +34,26 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
     private static final DecimalFormat df_price = new DecimalFormat("0.0000");
     private static final DecimalFormat df_percentage = new DecimalFormat("0.00");
     private ArrayList<Coin> mCoinsData;
-    private final ArrayList<Coin> mWatchlistData;
-    private final ArrayList<Coin> mItemDataAll;
+    private ArrayList<Coin> mWatchlistData;
+    private ArrayList<Coin> mItemDataAll;
     private final Context mContext;
     private int lastPosition = -1;
-    private final boolean isWatchlist;
+    private boolean isWatchlist;
     private long mLastClickTime = 0;
 
-    public CoinAdapter(Context context, ArrayList<Coin> itemsData, ArrayList<Coin> watchlistData, Boolean isWatchlist) {
-        this.mCoinsData = itemsData;
-        this.mItemDataAll = itemsData;
-        this.mWatchlistData = watchlistData;
+    public CoinAdapter(Context context) {
         this.mContext = context;
+    }
+
+    public void setCoins(ArrayList<Coin> coins) {
+        this.mCoinsData = coins;
+    }
+
+    public void setWatchlist(ArrayList<Coin> watchlist) {
+        this.mWatchlistData = watchlist;
+    }
+
+    public void setIsWatchlist(Boolean isWatchlist) {
         this.isWatchlist = isWatchlist;
     }
 
@@ -203,6 +212,5 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.ViewHolder> im
             }
 
         }, animation.getDuration());
-        Switch mWatchlistToggleButton = itemView.findViewById(R.id.itemWatchlistSwitch);
     }
 }

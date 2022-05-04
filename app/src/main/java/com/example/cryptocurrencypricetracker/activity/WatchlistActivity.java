@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cryptocurrencypricetracker.R;
 import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
 import com.example.cryptocurrencypricetracker.entity.Coin;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -21,7 +22,7 @@ public class WatchlistActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (mAuth.getCurrentUser() != null) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.d(LOG_TAG, "Autentikált felhasználó!");
         } else {
             Log.e(LOG_TAG, "Nem autentikált felhasználó!");
@@ -34,12 +35,16 @@ public class WatchlistActivity extends BaseActivity {
         int gridNumber = 1;
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, gridNumber));
 
-        if (!mWatchlistData.isEmpty()) {
+        ArrayList<Coin> watchlist = viewModel.getUserAccountData().getWatchlist();
+        if (!watchlist.isEmpty()) {
             mEmptyListTextView.setVisibility(View.INVISIBLE);
         } else {
             mEmptyListTextView.setVisibility(View.VISIBLE);
         }
-        mAdapter = new CoinAdapter(this, mWatchlistData, mWatchlistData, true);
+        mAdapter = new CoinAdapter(this);
+        mAdapter.setCoins(watchlist);
+        mAdapter.setWatchlist(watchlist);
+        mAdapter.setIsWatchlist(true);
         mRecyclerView.setAdapter(mAdapter);
     }
 }
