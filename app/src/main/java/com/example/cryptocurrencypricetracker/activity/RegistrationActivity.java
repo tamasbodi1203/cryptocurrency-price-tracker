@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -16,12 +17,17 @@ import com.example.cryptocurrencypricetracker.NotificationHelper;
 import com.example.cryptocurrencypricetracker.R;
 import com.example.cryptocurrencypricetracker.entity.Coin;
 import com.example.cryptocurrencypricetracker.entity.UserAccount;
+import com.example.cryptocurrencypricetracker.repository.CoinRepository;
+import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -110,9 +116,9 @@ public class RegistrationActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(LOG_TAG, "Felhasználó sikeresen létrehozva.");
-                            mNotificationHelper.send("Sikeres regisztráció! Bejelentkezett felhasználóként a kedvencek listád megmarad kijelentkezés után is, valamint tudod módosítani a telefonszámod.");
-                            mUserAccounts.add(new UserAccount(username, emailAddress, phoneNumberEditText.getText().toString(), new ArrayList<>()));
-                            initUserAccount();
+                            mNotificationHelper.send("Sikeres regisztráció!");
+                            userAccountRepository.createUserAccount(new UserAccount(username, emailAddress, phoneNumberEditText.getText().toString(), new ArrayList<>()));
+                            initSignedInData();
                         } else {
                             Log.d(LOG_TAG, "Felhasználó létrehozása sikertelen: " + task.getException().getMessage());
                             Toast.makeText(RegistrationActivity.this, "Felhasználó létrehozása sikertelen: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -132,26 +138,64 @@ public class RegistrationActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private void initUserAccount() {
-        mUserAccounts.whereEqualTo("emailAddress", mAuth.getCurrentUser().getEmail())
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
-                                userAccount = document.toObject(UserAccount.class);
-                                userAccount.setId(document.getId());
-                                mWatchlistData = userAccount.getWatchlistItems();
-                                System.out.println("valami");
-                                startCoinList();
+    private void initSignedInData() {
+        Task getSignedInUserAccount = userAccountRepository.getSignedInUserAccount();
+        Task getCoins = coinRepository.getCoins();
+        Task<Void> allTasks = Tasks.whenAll(getSignedInUserAccount, getCoins);
+        allTasks.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                QuerySnapshot querySnapshot = (QuerySnapshot) getSignedInUserAccount.getResult();
+                for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
+                    mUserAccountData = documentSnapshot.toObject(UserAccount.class);
+                    mUserAccountData.setId(documentSnapshot.getId());
+                    mWatchlistData = mUserAccountData.getWatchlistItems();
+                }
+
+                QuerySnapshot coinQuerySnapShot = (QuerySnapshot) getCoins.getResult();
+                for (DocumentSnapshot documentSnapshot : coinQuerySnapShot.getDocuments()) {
+                    Coin coin = documentSnapshot.toObject(Coin.class);
+                    coin.setId(documentSnapshot.getId());
+                    mCoinsData.add(coin);
+                }
+                if (coinQuerySnapShot.getDocuments().isEmpty()) {
+                    initDataFromFile();
+                    Task getCoinsRecall = coinRepository.getCoins();
+                    Task<Void> recall = Tasks.whenAll(getCoinsRecall);
+                    recall.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            QuerySnapshot coinQuerySnapShot = (QuerySnapshot) getCoinsRecall.getResult();
+                            for (DocumentSnapshot documentSnapshot : coinQuerySnapShot.getDocuments()) {
+                                Coin coin = documentSnapshot.toObject(Coin.class);
+                                coin.setId(documentSnapshot.getId());
+                                mCoinsData.add(coin);
                             }
-                        } else {
-                            Log.d(LOG_TAG, "Error getting documents: ", task.getException());
+                            startCoinList();
                         }
-                    }
-                });
+                    });
+                } else {
+                    startCoinList();
+                }
+            }
+        });
+    }
+
+    private void initDataFromFile() {
+        String[] itemCoinGeckoId = getResources().getStringArray(R.array.cryptocurrency_item_coin_gecko_ids);
+        String[] itemSymbol = getResources().getStringArray(R.array.cryptocurrency_item_symbols);
+        String[] itemsPrice = getResources().getStringArray(R.array.cryptocurrency_item_prices);
+        String[] itemsPercentageChange = getResources().getStringArray(R.array.cryptocurrency_item_percentage_changes);
+        TypedArray itemsImageResource = getResources().obtainTypedArray(R.array.cryptocurrency_item_images);
+
+
+        for (int i = 0; i < itemSymbol.length; i++) {
+            Coin coin = new Coin(itemCoinGeckoId[i], itemSymbol[i], Double.parseDouble(itemsPrice[i]), Double.parseDouble(itemsPercentageChange[i]), itemsImageResource.getResourceId(i, 0));
+            coinRepository.addCoin(coin);
+        }
+
+        itemsImageResource.recycle();
+
     }
 
 }

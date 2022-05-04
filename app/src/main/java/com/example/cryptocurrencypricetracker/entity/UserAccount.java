@@ -31,5 +31,4 @@ public class UserAccount {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    public void setWatchlistItems(ArrayList<Coin> watchlistItems) { this.watchlistItems = watchlistItems; }
 }

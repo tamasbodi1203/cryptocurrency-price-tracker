@@ -1,6 +1,5 @@
 package com.example.cryptocurrencypricetracker.activity;
 
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,15 +16,9 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cryptocurrencypricetracker.PriceAsyncLoader;
 import com.example.cryptocurrencypricetracker.R;
 import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
 import com.example.cryptocurrencypricetracker.entity.Coin;
-import com.example.cryptocurrencypricetracker.entity.UserAccount;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +26,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,20 +33,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class CoinListActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<ArrayList<Coin>> {
+public class CoinListActivity extends BaseActivity {
 
     private static final String LOG_TAG = CoinListActivity.class.getName();
 
     Handler handler = new Handler();
-    private OkHttpClient okHttpClient = new OkHttpClient();
-    private RecyclerView mRecyclerView;
-    private int gridNumber = 1;
+    private final OkHttpClient okHttpClient = new OkHttpClient();
 
-    private Runnable runnableCode = new Runnable() {
+    private final Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
             Log.d("Handlers", "Called on main thread");
-            // Repeat this the same runnable code block again another 10 seconds
+            // Repeat this the same runnable code block every 10 seconds
             refreshPrices();
             mAdapter.notifyDataSetChanged();
             // 'this' is referencing the Runnable object
@@ -66,23 +55,24 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (mUser != null) {
+        if (mAuth.getCurrentUser() != null) {
             Log.d(LOG_TAG, "Autentikált felhasználó!");
         } else {
             Log.e(LOG_TAG, "Nem autentikált felhasználó!");
             finish();
         }
         setContentView(R.layout.activity_coin_list);
-        showProgressDialog(this, "Kriptovaluták inicializálása...");
 
-        mRecyclerView = findViewById(R.id.recycleView);
+        RecyclerView mRecyclerView = findViewById(R.id.recycleView);
+        int gridNumber = 1;
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, gridNumber));
-        mItemsData = new ArrayList<>();
 
-        mAdapter = new CoinAdapter(this, mItemsData, mWatchlistData, false);
+        mAdapter = new CoinAdapter(this, mCoinsData, mWatchlistData, false);
         mRecyclerView.setAdapter(mAdapter);
 
-        queryData();
+        mAdapter.notifyDataSetChanged();
+        hideProgressDialog();
+        //queryData();
 
         // Periódikus árfolyam frissítés
         handler.post(runnableCode);
@@ -92,45 +82,6 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
     protected void onResume() {
         super.onResume();
         mAdapter.notifyDataSetChanged();
-    }
-
-    private void queryData() {
-        mItemsData.clear();
-
-        mItems.orderBy("symbol").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                Coin item = documentSnapshot.toObject(Coin.class);
-                item.setId(documentSnapshot.getId());
-                mItemsData.add(item);
-            }
-
-            if (mItemsData.size() == 0) {
-                initializeData();
-                queryData();
-            }
-            mAdapter.notifyDataSetChanged();
-            hideProgressDialog();
-        });
-    }
-
-    private void initializeData() {
-        String[] itemCoinGeckoId = getResources().getStringArray(R.array.cryptocurrency_item_coin_gecko_ids);
-        String[] itemSymbol = getResources().getStringArray(R.array.cryptocurrency_item_symbols);
-        String[] itemsPrice = getResources().getStringArray(R.array.cryptocurrency_item_prices);
-        String[] itemsPercentageChange = getResources().getStringArray(R.array.cryptocurrency_item_percentage_changes);
-        TypedArray itemsImageResource = getResources().obtainTypedArray(R.array.cryptocurrency_item_images);
-
-//        mItemsData.clear();
-
-        for (int i = 0; i < itemSymbol.length; i++) {
-//            mItemsData.add(new CoinItem(itemCoinGeckoId[i], itemSymbol[i], new BigDecimal(itemsPrice[i]), itemsImageResource.getResourceId(i, 0)));
-            mItems.add(new Coin(itemCoinGeckoId[i], itemSymbol[i], Double.parseDouble(itemsPrice[i]), Double.parseDouble(itemsPercentageChange[i]), itemsImageResource.getResourceId(i, 0)));
-        }
-
-        itemsImageResource.recycle();
-
-//        mAdapter.notifyDataSetChanged();
-
     }
 
     @Override
@@ -186,24 +137,10 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
         return true;
     }
 
-    @NonNull
-    @Override
-    public Loader<ArrayList<Coin>> onCreateLoader(int id, @Nullable Bundle args) {
-        return new PriceAsyncLoader(this, mItemsData);
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<ArrayList<Coin>> loader, ArrayList<Coin> data) {
-        mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<ArrayList<Coin>> loader) {}
-
     // Árfolyam frissítése
     private void refreshPrices() {
         String ids = "";
-        Iterator<Coin> iterator = mItemsData.iterator();
+        Iterator<Coin> iterator = mCoinsData.iterator();
         while (iterator.hasNext()) {
             Coin item = iterator.next();
             ids = ids + item.getCoinGeckoId() + "%2C";
@@ -216,13 +153,11 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
                 .url("https://api.coingecko.com/api/v3/simple/price?ids=" + ids + "&vs_currencies=USD&include_24hr_change=true")
                 .build();
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Toast.makeText(CoinListActivity.this, "Hiba történt az árfolyam lekérdezése során: "
                         + e.getMessage(), Toast.LENGTH_SHORT).show();
-                countDownLatch.countDown();
             }
 
             @Override
@@ -230,56 +165,37 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
                     throws IOException {
                 final String body = response.body().string();
                 parseResponse(body);
-                countDownLatch.countDown();
             }
         });
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
     }
 
     private void parseResponse(String body) {
         try {
             JSONObject jsonObject = new JSONObject(body);
-            for (Coin item : mItemsData) {
-                JSONObject priceObject = jsonObject.getJSONObject(item.getCoinGeckoId());
+            for (Coin coin : mCoinsData) {
+                JSONObject priceObject = jsonObject.getJSONObject(coin.getCoinGeckoId());
                 String priceString = String.valueOf(priceObject.get("usd"));
                 String percentageChangeString = String.valueOf(priceObject.get("usd_24h_change"));
-                Log.d(LOG_TAG, item.getSymbol() + " latest price: $" + priceString + ", 24h change: " + percentageChangeString + "%");
-                mItems.document(item._getId()).update("price", Double.parseDouble(priceString));
-                mItems.document(item._getId()).update("percentageChange", Double.parseDouble(percentageChangeString));
+                Log.d(LOG_TAG, coin.getSymbol() + " latest price: $" + priceString + ", 24h change: " + percentageChangeString + "%");
 
-                item.setPrice(Double.parseDouble(priceString));
-                item.setPercentageChange(Double.parseDouble(percentageChangeString));
+                coin.setPrice(Double.parseDouble(priceString));
+                coin.setPercentageChange(Double.parseDouble(percentageChangeString));
+                coinRepository.updateCoin(coin);
+            }
+            for (Coin coin : mWatchlistData) {
+                JSONObject priceObject = jsonObject.getJSONObject(coin.getCoinGeckoId());
+                String priceString = String.valueOf(priceObject.get("usd"));
+                String percentageChangeString = String.valueOf(priceObject.get("usd_24h_change"));
+
+                coin.setPrice(Double.parseDouble(priceString));
+                coin.setPercentageChange(Double.parseDouble(percentageChangeString));
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-    }
-
-    private void initUserAccount() throws ExecutionException, InterruptedException {
-        Task task = mUserAccounts.whereEqualTo("emailAddress", mUser.getEmail()).get();
-            task.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
-                                userAccount = document.toObject(UserAccount.class);
-                                userAccount.setId(document.getId());
-                                mWatchlistData = userAccount.getWatchlistItems();
-
-                            }
-                        } else {
-                            Log.d(LOG_TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
     }
 
 }
