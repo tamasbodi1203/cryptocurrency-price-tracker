@@ -54,7 +54,4 @@ public class NotificationHelper {
         mNotifyManager.notify(NOTIFICATION_ID, builder.build());
     }
 
-    public void cancel() {
-        mNotifyManager.cancel(NOTIFICATION_ID);
-    }
 }

@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 
 import com.example.cryptocurrencypricetracker.NotificationHelper;
 import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 
 public class UserAccountActivity extends BaseActivity {
 
@@ -40,9 +42,9 @@ public class UserAccountActivity extends BaseActivity {
         emailTextView = findViewById(R.id.emailAddressTextView);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
 
-        usernameTextView.setText(mUserAccountData.getUsername());
-        emailTextView.setText(mUserAccountData.getEmailAddress());
-        phoneNumberEditText.setText(mUserAccountData.getPhoneNumber());
+        usernameTextView.setText(viewModel.getUserAccountData().getUsername());
+        emailTextView.setText(viewModel.getUserAccountData().getEmailAddress());
+        phoneNumberEditText.setText(viewModel.getUserAccountData().getPhoneNumber());
 
         mNotificationHelper = new NotificationHelper(this);
     }
@@ -53,14 +55,26 @@ public class UserAccountActivity extends BaseActivity {
 
     public void updateAccount(View view) {
         String phoneNumber = phoneNumberEditText.getText().toString();
-        mUserAccountData.setPhoneNumber(phoneNumber);
-        userAccountRepository.updateUserAccount(mUserAccountData);
+        viewModel.getUserAccountData().setPhoneNumber(phoneNumber);
+        viewModel.updateUserAccount().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                Toast.makeText(UserAccountActivity.this, "Sikeres adatmódosítás!" , Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(UserAccountActivity.this, "Hiba történt az adatok módosítása során: " + task.getException(), Toast.LENGTH_LONG).show();
+            }
+        });
         finish();
+
     }
 
     public void deleteAccount(View view) {
-        userAccountRepository.deleteUserAccount(mUserAccountData);
-        mNotificationHelper.send("Fiók sikeresen törölve!");
+        UserAccountRepository.getInstance().deleteUserAccount().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                mNotificationHelper.send("Fiók sikeresen törölve!");
+            } else {
+                Toast.makeText(UserAccountActivity.this, "Hiba történt a fiók törlése során: " + task.getException(), Toast.LENGTH_LONG).show();
+            }
+        });
         finishAffinity();
         startActivity(new Intent(this, MainActivity.class));
     }
