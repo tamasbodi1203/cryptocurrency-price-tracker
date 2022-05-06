@@ -1,4 +1,4 @@
-package com.example.pocketsentinel;
+package com.example.cryptocurrencypricetracker;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.pocketsentinel.activity.CoinListActivity;
+import com.example.cryptocurrencypricetracker.activity.CoinListActivity;
 
 public class NotificationHelper {
     private static final String CHANNEL_ID = "tracker_notification_channel";
@@ -51,6 +53,12 @@ public class NotificationHelper {
                 .setSmallIcon(R.drawable.ic_watchlist);
                 //.setContentIntent(pendingIntent);
 
+        Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(500);
+        }
         mNotifyManager.notify(NOTIFICATION_ID, builder.build());
     }
 

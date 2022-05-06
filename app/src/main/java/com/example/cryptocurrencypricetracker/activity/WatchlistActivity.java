@@ -1,4 +1,4 @@
-package com.example.pocketsentinel.activity;
+package com.example.cryptocurrencypricetracker.activity;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -8,9 +8,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pocketsentinel.R;
-import com.example.pocketsentinel.adapter.CoinAdapter;
-import com.example.pocketsentinel.entity.Coin;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
+import com.example.cryptocurrencypricetracker.entity.Coin;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;

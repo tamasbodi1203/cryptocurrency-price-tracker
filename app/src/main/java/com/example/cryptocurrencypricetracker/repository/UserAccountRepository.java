@@ -1,11 +1,11 @@
-package com.example.pocketsentinel.repository;
+package com.example.cryptocurrencypricetracker.repository;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.pocketsentinel.entity.Coin;
-import com.example.pocketsentinel.entity.UserAccount;
+import com.example.cryptocurrencypricetracker.entity.Coin;
+import com.example.cryptocurrencypricetracker.entity.UserAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

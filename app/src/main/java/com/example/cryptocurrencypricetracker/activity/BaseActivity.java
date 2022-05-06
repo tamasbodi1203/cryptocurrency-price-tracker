@@ -1,4 +1,4 @@
-package com.example.pocketsentinel.activity;
+package com.example.cryptocurrencypricetracker.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,11 +9,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.pocketsentinel.repository.UserAccountRepository;
-import com.example.pocketsentinel.entity.Coin;
-import com.example.pocketsentinel.adapter.CoinAdapter;
-import com.example.pocketsentinel.R;
-import com.example.pocketsentinel.view.ViewModel;
+import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
+import com.example.cryptocurrencypricetracker.entity.Coin;
+import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.view.ViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;

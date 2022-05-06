@@ -1,4 +1,4 @@
-package com.example.pocketsentinel.activity;
+package com.example.cryptocurrencypricetracker.activity;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -11,12 +11,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.pocketsentinel.NotificationHelper;
-import com.example.pocketsentinel.R;
-import com.example.pocketsentinel.entity.UserAccount;
-import com.example.pocketsentinel.repository.CoinRepository;
-import com.example.pocketsentinel.repository.UserAccountRepository;
-import com.example.pocketsentinel.view.ViewModel;
+import com.example.cryptocurrencypricetracker.NotificationHelper;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.entity.UserAccount;
+import com.example.cryptocurrencypricetracker.repository.CoinRepository;
+import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
+import com.example.cryptocurrencypricetracker.view.ViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;

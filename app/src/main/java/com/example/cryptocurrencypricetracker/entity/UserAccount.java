@@ -1,4 +1,4 @@
-package com.example.pocketsentinel.entity;
+package com.example.cryptocurrencypricetracker.entity;
 
 import java.util.ArrayList;
 

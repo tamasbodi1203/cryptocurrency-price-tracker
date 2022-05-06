@@ -1,4 +1,4 @@
-package com.example.pocketsentinel;
+package com.example.cryptocurrencypricetracker;
 
 import android.content.Context;
 

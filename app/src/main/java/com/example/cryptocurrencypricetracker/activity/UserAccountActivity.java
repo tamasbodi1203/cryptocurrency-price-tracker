@@ -1,4 +1,4 @@
-package com.example.pocketsentinel.activity;
+package com.example.cryptocurrencypricetracker.activity;
 
 import android.content.Intent;
 import android.os.Build;
@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pocketsentinel.NotificationHelper;
-import com.example.pocketsentinel.R;
-import com.example.pocketsentinel.repository.UserAccountRepository;
+import com.example.cryptocurrencypricetracker.NotificationHelper;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
 
 public class UserAccountActivity extends BaseActivity {
 
@@ -68,12 +68,6 @@ public class UserAccountActivity extends BaseActivity {
     public void deleteAccount(View view) {
         UserAccountRepository.getInstance().deleteUserAccount().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    v.vibrate(500);
-                }
                 mNotificationHelper.send("Fiók sikeresen törölve!");
             } else {
                 Toast.makeText(UserAccountActivity.this, "Hiba történt a fiók törlése során: " + task.getException(), Toast.LENGTH_LONG).show();

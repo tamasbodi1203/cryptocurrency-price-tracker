@@ -1,4 +1,4 @@
-package com.example.pocketsentinel;
+package com.example.cryptocurrencypricetracker;
 
 import android.content.Context;
 import android.os.Handler;
@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
 
-import com.example.pocketsentinel.repository.CoinRepository;
+import com.example.cryptocurrencypricetracker.repository.CoinRepository;
 
 public class PriceAsyncLoader extends AsyncTaskLoader<Void> {
 
@@ -28,17 +28,17 @@ public class PriceAsyncLoader extends AsyncTaskLoader<Void> {
     @Nullable
     @Override
     public Void loadInBackground() {
+//        handler.post(runnableCode);
         CoinRepository.getInstance().refreshPrices();
-        handler.post(runnableCode);
         return null;
     }
 
     private final Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
-            Log.d("Handlers", "Called on main thread");
+            handler.postDelayed(this, 30000);
+            Log.d("Handlers", "Refreshing prices...");
             CoinRepository.getInstance().refreshPrices();
-            handler.postDelayed(this, 10000);
         }
     };
 }

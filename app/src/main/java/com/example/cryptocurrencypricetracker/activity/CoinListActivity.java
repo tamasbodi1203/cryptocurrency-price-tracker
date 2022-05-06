@@ -1,4 +1,4 @@
-package com.example.pocketsentinel.activity;
+package com.example.cryptocurrencypricetracker.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,9 +15,9 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pocketsentinel.PriceAsyncLoader;
-import com.example.pocketsentinel.R;
-import com.example.pocketsentinel.adapter.CoinAdapter;
+import com.example.cryptocurrencypricetracker.PriceAsyncLoader;
+import com.example.cryptocurrencypricetracker.R;
+import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class CoinListActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Void> {
@@ -29,9 +29,9 @@ public class CoinListActivity extends BaseActivity implements LoaderManager.Load
     private final Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
-            Log.d("Handlers", "Called on main thread");
+            Log.d(LOG_TAG, "Refreshing prices...");
             getSupportLoaderManager().restartLoader(0, null, CoinListActivity.this);
-            handler.postDelayed(this, 10000);
+            handler.postDelayed(this, 30000);
         }
     };
 
