@@ -1,21 +1,19 @@
-package com.example.cryptocurrencypricetracker.activity;
+package com.example.pocketsentinel.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.example.cryptocurrencypricetracker.NotificationHelper;
-import com.example.cryptocurrencypricetracker.R;
-import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
+import com.example.pocketsentinel.NotificationHelper;
+import com.example.pocketsentinel.R;
+import com.example.pocketsentinel.repository.UserAccountRepository;
 
 public class UserAccountActivity extends BaseActivity {
 
@@ -70,6 +68,12 @@ public class UserAccountActivity extends BaseActivity {
     public void deleteAccount(View view) {
         UserAccountRepository.getInstance().deleteUserAccount().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    v.vibrate(500);
+                }
                 mNotificationHelper.send("Fiók sikeresen törölve!");
             } else {
                 Toast.makeText(UserAccountActivity.this, "Hiba történt a fiók törlése során: " + task.getException(), Toast.LENGTH_LONG).show();

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cryptocurrencypricetracker">
+    package="com.example.pocketsentinel">
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -10,22 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptocurrencyPriceTracker">
         <activity
-            android:name=".activity.WatchlistActivity"
+            android:name="com.example.pocketsentinel.activity.WatchlistActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.UserAccountActivity"
+            android:name="com.example.pocketsentinel.activity.UserAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".BaseActivity2"
+            android:name="com.example.pocketsentinel.activity.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.CoinListActivity"
+            android:name="com.example.pocketsentinel.activity.CoinListActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.RegistrationActivity"
+            android:name="com.example.pocketsentinel.activity.RegistrationActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.example.pocketsentinel.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

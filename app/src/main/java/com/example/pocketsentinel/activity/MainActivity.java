@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker.activity;
+package com.example.pocketsentinel.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,14 +10,13 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.cryptocurrencypricetracker.R;
-import com.example.cryptocurrencypricetracker.repository.CoinRepository;
-import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
-import com.example.cryptocurrencypricetracker.view.ViewModel;
+import com.example.pocketsentinel.R;
+import com.example.pocketsentinel.repository.CoinRepository;
+import com.example.pocketsentinel.repository.UserAccountRepository;
+import com.example.pocketsentinel.view.ViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.auth.User;
 
 public class MainActivity extends BaseActivity {
 

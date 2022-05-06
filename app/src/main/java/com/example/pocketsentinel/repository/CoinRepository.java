@@ -1,12 +1,11 @@
-package com.example.cryptocurrencypricetracker.repository;
+package com.example.pocketsentinel.repository;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.Log;
 
-import com.example.cryptocurrencypricetracker.R;
-import com.example.cryptocurrencypricetracker.entity.Coin;
-import com.example.cryptocurrencypricetracker.entity.UserAccount;
+import com.example.pocketsentinel.R;
+import com.example.pocketsentinel.entity.Coin;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -91,6 +90,7 @@ public class CoinRepository {
                                 coin.setId(documentSnapshot.getId());
                                 mCoinsData.add(coin);
                             }
+                            refreshPrices();
                         }
                     }
                 });

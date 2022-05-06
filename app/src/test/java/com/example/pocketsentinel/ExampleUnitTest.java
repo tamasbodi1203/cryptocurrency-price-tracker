@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker;
+package com.example.pocketsentinel;
 
 import org.junit.Test;
 

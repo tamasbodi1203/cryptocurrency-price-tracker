@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker.entity;
+package com.example.pocketsentinel.entity;
 
 public class Coin {
 

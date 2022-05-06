@@ -11,11 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/itemImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:adjustViewBounds="true"
+            app:civ_shadow_radius="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
