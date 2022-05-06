@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker.adapter;
+package com.example.pocketsentinel.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -20,11 +20,10 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.cryptocurrencypricetracker.R;
-import com.example.cryptocurrencypricetracker.activity.BaseActivity;
-import com.example.cryptocurrencypricetracker.entity.Coin;
+import com.example.pocketsentinel.R;
+import com.example.pocketsentinel.activity.BaseActivity;
+import com.example.pocketsentinel.entity.Coin;
 
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 

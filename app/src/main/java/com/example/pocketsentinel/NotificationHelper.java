@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker;
+package com.example.pocketsentinel;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,7 +9,7 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.cryptocurrencypricetracker.activity.CoinListActivity;
+import com.example.pocketsentinel.activity.CoinListActivity;
 
 public class NotificationHelper {
     private static final String CHANNEL_ID = "tracker_notification_channel";

@@ -1,15 +1,14 @@
-package com.example.cryptocurrencypricetracker.view;
+package com.example.pocketsentinel.view;
 
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 
-import com.example.cryptocurrencypricetracker.entity.Coin;
-import com.example.cryptocurrencypricetracker.entity.UserAccount;
-import com.example.cryptocurrencypricetracker.repository.CoinRepository;
-import com.example.cryptocurrencypricetracker.repository.UserAccountRepository;
+import com.example.pocketsentinel.entity.Coin;
+import com.example.pocketsentinel.entity.UserAccount;
+import com.example.pocketsentinel.repository.CoinRepository;
+import com.example.pocketsentinel.repository.UserAccountRepository;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 

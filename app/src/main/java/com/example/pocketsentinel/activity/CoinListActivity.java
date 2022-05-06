@@ -1,4 +1,4 @@
-package com.example.cryptocurrencypricetracker.activity;
+package com.example.pocketsentinel.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,16 +7,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.MenuItemCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cryptocurrencypricetracker.R;
-import com.example.cryptocurrencypricetracker.adapter.CoinAdapter;
-import com.example.cryptocurrencypricetracker.repository.CoinRepository;
+import com.example.pocketsentinel.PriceAsyncLoader;
+import com.example.pocketsentinel.R;
+import com.example.pocketsentinel.adapter.CoinAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class CoinListActivity extends BaseActivity {
+public class CoinListActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Void> {
 
     private static final String LOG_TAG = CoinListActivity.class.getName();
 
@@ -26,14 +30,14 @@ public class CoinListActivity extends BaseActivity {
         @Override
         public void run() {
             Log.d("Handlers", "Called on main thread");
-            CoinRepository.getInstance().refreshPrices();
-            mAdapter.notifyDataSetChanged();
+            getSupportLoaderManager().restartLoader(0, null, CoinListActivity.this);
             handler.postDelayed(this, 10000);
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.d(LOG_TAG, "Autentikált felhasználó!");
@@ -54,6 +58,7 @@ public class CoinListActivity extends BaseActivity {
         mAdapter.notifyDataSetChanged();
 
         // Periódikus árfolyam frissítés
+        getSupportLoaderManager().restartLoader(0, null, this);
         handler.post(runnableCode);
     }
 
@@ -121,4 +126,19 @@ public class CoinListActivity extends BaseActivity {
         return true;
     }
 
+    @NonNull
+    @Override
+    public Loader<Void> onCreateLoader(int id, @Nullable Bundle args) {
+        return new PriceAsyncLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Void> loader, Void data) {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Void> loader) {
+
+    }
 }
