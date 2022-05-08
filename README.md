@@ -1,5 +1,5 @@
 # Pocket Sentinel
-## Kriptovaluta árfolyam figyelő Android-alapú mobilalkalmazás.
+## Kriptovaluta árfolyam figyelő Android-alapú mobilalkalmazás. Bármilyen kérdés/probléma esetén elérhető vagyok discordon: Thomas1203#4327
 
 ## Funkciók: 
 * Felhasználókezelés Firebase által
