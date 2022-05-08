@@ -133,7 +133,6 @@ public class RegistrationActivity extends BaseActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if (initTasks.isSuccessful()) {
                     startCoinList();
-                    Toast.makeText(RegistrationActivity.this, "Bejelentkezve.", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d(LOG_TAG, "Bejelentkezés sikertelen: " + initTasks.getException().getMessage());
                 }
